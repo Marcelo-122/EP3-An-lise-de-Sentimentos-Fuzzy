@@ -1,37 +1,55 @@
+#%%
 import numpy as np
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 
-freio = ctrl.Consequent(np.arange(0, 100, 1), "Freio")
-aprox = ctrl.Antecedent(np.arange(0, 14, 1), "Aproximação")
-dist = ctrl.Antecedent(np.arange(0, 60, 1), "Distância em metros")
+# FP = Frequência de palavras-chave positivas 
+# FN = Frequência de palavras-chave negativas
+# I = Intensificadores
+# N = Negações
+# PS = Polaridade do sentimento
 
-freio["Pisadinha"] = fuzz.trapmf(freio.universe, [0, 0, 10, 25])
-freio["Intermediária"] = fuzz.trapmf(freio.universe, [20, 30, 60, 85])
-freio["Pisar até o Fim"] = fuzz.trapmf(freio.universe, [80, 90, 100, 100])
+PS = ctrl.Consequent(np.arange(0, 1, 0.01), 'Polaridade do sentimento')
 
-aprox["Devagar"] = fuzz.trapmf(aprox.universe, [0, 0, 3, 5])
-aprox["Rápido"] = fuzz.trapmf(aprox.universe, [4, 6, 8, 10])
-aprox["Muito rápido"] = fuzz.trapmf(aprox.universe, [9, 12, 14, 14])
+FP = ctrl.Antecedent(np.arange(0, 1, 0.01), 'Positivas')
+FN = ctrl.Antecedent(np.arange(0, 1, 0.01), 'Negativas')
+I = ctrl.Antecedent(np.arange(0, 1, 0.01), 'Intensificadores')
+N = ctrl.Antecedent(np.arange(0, 1, 0.01), 'Negações')
 
-dist["Perto"] = fuzz.trapmf(dist.universe, [0, 0, 8, 15])
-dist["Longe"] = fuzz.trapmf(dist.universe, [10, 50, 60, 60])
+FP['Baixa'] = fuzz.trimf(FP.universe, [0, 0, 0.3])
+FP['Média'] = fuzz.trimf(FP.universe, [0.2, 0.4, 0.6])
+FP['Alta'] = fuzz.trimf(FP.universe, [0.4, 1, 1])
 
-rule1 = ctrl.Rule(aprox["Rápido"] & dist["Longe"], freio["Pisar até o Fim"])
-rule2 = ctrl.Rule(aprox["Muito rápido"] & dist["Perto"], freio["Pisar até o Fim"])
-rule3 = ctrl.Rule(aprox["Rápido"] & dist["Longe"], freio["Pisadinha"])
-rule4 = ctrl.Rule(aprox["Muito rápido"] | dist["Longe"], freio["Intermediária"])
-rule5 = ctrl.Rule(aprox["Devagar"] & dist["Perto"], freio["Pisadinha"])
+FN['Baixa'] = fuzz.trimf(FN.universe, [0, 0, 0.3])
+FN['Média'] = fuzz.trimf(FN.universe, [0.2, 0.4, 0.6])
+FN['Alta'] = fuzz.trimf(FN.universe, [0.4, 1, 1])
 
-freio_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5])
-freio_simulador = ctrl.ControlSystemSimulation(freio_ctrl)
+I['Baixa'] = fuzz.trimf(FP.universe, [0, 0, 0.3])
+I['Média'] = fuzz.trimf(FP.universe, [0.2, 0.4, 0.6])
+I['Alta'] = fuzz.trimf(FP.universe, [0.4, 1, 1])
 
-freio_simulador.input["Aproximação"] = 3
-freio_simulador.input["Distância em metros"] = 50
+N['Baixa'] = fuzz.trimf(N.universe, [0, 0, 0.3])
+N['Média'] = fuzz.trimf(N.universe, [0.2, 0.4, 0.6])
+N['Alta'] = fuzz.trimf(N.universe, [0.4, 1, 1])
 
-freio_simulador.compute()
-print(freio_simulador.output["Freio"])
+PS['Negativa'] = fuzz.trimf(PS.universe, [0, 0, 0.3])
+PS['Neutra'] = fuzz.trimf(PS.universe, [0.2, 0.4, 0.6])
+PS['Positiva'] = fuzz.trimf(PS.universe, [0.4, 1, 1])
 
-aprox.view(sim=freio_simulador)
-dist.view(sim=freio_simulador)
-freio.view(sim=freio_simulador)
+rule1 = ctrl.Rule(FP['Alta'] & I['Alta'] & FN['Baixa'] & N['Baixa'], PS['Positiva'])
+rule2 = ctrl.Rule(FP['Baixa'] & I['Alta'] & FN['Alta']  & N['Baixa'], PS['Negativa'])
+rule3 = ctrl.Rule(FP['Alta'] & I['Alta'] & FN['Baixa'] & N['Alta'], PS['Negativa'])
+rule4 = ctrl.Rule(FP['Baixa'] & I['Alta'] & FN['Alta'] & N['Alta'], PS['Negativa'])
+rule5 = ctrl.Rule(FP['Alta'] & I['Baixa'] & FN['Alta'] & N['Baixa'], PS['Neutra'])
+
+PS_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5])
+PS_simulador = ctrl.ControlSystemSimulation(PS_ctrl)
+
+PS_simulador.input['Positivas'] = 1
+PS_simulador.input['Negativas'] = 0
+PS_simulador.input['Intensificadores'] = 1
+PS_simulador.input['Negações'] = 0
+
+PS_simulador.compute()
+print(PS_simulador.output['Polaridade do sentimento'])
+# %%
