@@ -42,7 +42,6 @@ rule2 = ctrl.Rule(FP['Baixa'] & I['Alta'] & FN['Alta'] & N['Baixa'], PS['Negativ
 rule3 = ctrl.Rule(FP['Alta'] & I['Alta'] & FN['Baixa'] & N['Alta'], PS['Negativa'])
 rule4 = ctrl.Rule(FP['Baixa'] & I['Alta'] & FN['Alta'] & N['Alta'], PS['Positiva'])
 rule5 = ctrl.Rule(FP['Alta'] & I['Baixa'] & FN['Alta'] & N['Baixa'], PS['Neutra'])
-
 rule6 = ctrl.Rule(FN['Baixa'] & I['Baixa'], PS['Positiva'])
 
 
