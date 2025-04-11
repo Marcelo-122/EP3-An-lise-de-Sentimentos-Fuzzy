@@ -38,17 +38,18 @@ PS['Neutra'] = fuzz.trimf(PS.universe, [0.2, 0.4, 0.6])
 PS['Positiva'] = fuzz.trimf(PS.universe, [0.4, 1, 1])
 
 rule1 = ctrl.Rule(FP['Alta'] & I['Alta'] & FN['Baixa'] & N['Baixa'], PS['Positiva'])
-rule2 = ctrl.Rule(FP['Baixa'] & I['Alta'] & FN['Alta']  & N['Baixa'], PS['Negativa'])
+rule2 = ctrl.Rule(FP['Baixa'] & I['Alta'] & FN['Alta'] & N['Baixa'], PS['Negativa'])
 rule3 = ctrl.Rule(FP['Alta'] & I['Alta'] & FN['Baixa'] & N['Alta'], PS['Negativa'])
 rule4 = ctrl.Rule(FP['Baixa'] & I['Alta'] & FN['Alta'] & N['Alta'], PS['Positiva'])
 rule5 = ctrl.Rule(FP['Alta'] & I['Baixa'] & FN['Alta'] & N['Baixa'], PS['Neutra'])
-rule6 = ctrl.Rule(FP['Baixa'] & I['Baixa'], PS['Positiva'])
-rule7 = ctrl.Rule(FP['Média'] & I['Média'], PS['Positiva'])
 
-PS_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7])
+rule6 = ctrl.Rule(FN['Baixa'] & I['Baixa'], PS['Positiva'])
+
+
+PS_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6])
 PS_simulador = ctrl.ControlSystemSimulation(PS_ctrl)
 
-texto = "o filme foi muito bom"
+texto = "o filme foi bom"
 fp, fn, i, n = analisar_texto(texto)
 
 print(f"FP: {fp}, FN: {fn}, I: {i}, N: {n}")
