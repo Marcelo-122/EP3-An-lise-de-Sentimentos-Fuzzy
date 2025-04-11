@@ -42,9 +42,10 @@ rule2 = ctrl.Rule(FP['Baixa'] & I['Alta'] & FN['Alta']  & N['Baixa'], PS['Negati
 rule3 = ctrl.Rule(FP['Alta'] & I['Alta'] & FN['Baixa'] & N['Alta'], PS['Negativa'])
 rule4 = ctrl.Rule(FP['Baixa'] & I['Alta'] & FN['Alta'] & N['Alta'], PS['Positiva'])
 rule5 = ctrl.Rule(FP['Alta'] & I['Baixa'] & FN['Alta'] & N['Baixa'], PS['Neutra'])
+rule6 = ctrl.Rule(FP['Baixa'] & I['Baixa'], PS['Positiva'])
+rule7 = ctrl.Rule(FP['Média'] & I['Média'], PS['Positiva'])
 
-
-PS_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5])
+PS_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7])
 PS_simulador = ctrl.ControlSystemSimulation(PS_ctrl)
 
 texto = "o filme foi muito bom"
@@ -62,11 +63,11 @@ PS_simulador.compute()
 try:
     valor = PS_simulador.output['Polaridade do sentimento']
     if valor < 0.33:
-        print("Sentimento: Negativo")
+        print("Sentimento: Negativo \nValor: " + str(valor))
     elif valor < 0.66:
-        print("Sentimento: Neutro")
+        print("Sentimento: Neutro \nValor: " + str(valor))
     else:
-        print("Sentimento: Positivo")
+        print("Sentimento: Positivo \nValor: " + str(valor))
 except KeyError:
     print("Erro: Nenhuma regra foi disparada ou entradas inválidas.")
 
