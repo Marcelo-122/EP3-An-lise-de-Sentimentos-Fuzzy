@@ -2,6 +2,7 @@
 import numpy as np
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
+from analisar_texto import analisar_texto
 
 # FP = Frequência de palavras-chave positivas 
 # FN = Frequência de palavras-chave negativas
@@ -39,17 +40,34 @@ PS['Positiva'] = fuzz.trimf(PS.universe, [0.4, 1, 1])
 rule1 = ctrl.Rule(FP['Alta'] & I['Alta'] & FN['Baixa'] & N['Baixa'], PS['Positiva'])
 rule2 = ctrl.Rule(FP['Baixa'] & I['Alta'] & FN['Alta']  & N['Baixa'], PS['Negativa'])
 rule3 = ctrl.Rule(FP['Alta'] & I['Alta'] & FN['Baixa'] & N['Alta'], PS['Negativa'])
-rule4 = ctrl.Rule(FP['Baixa'] & I['Alta'] & FN['Alta'] & N['Alta'], PS['Negativa'])
+rule4 = ctrl.Rule(FP['Baixa'] & I['Alta'] & FN['Alta'] & N['Alta'], PS['Positiva'])
 rule5 = ctrl.Rule(FP['Alta'] & I['Baixa'] & FN['Alta'] & N['Baixa'], PS['Neutra'])
+
 
 PS_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5])
 PS_simulador = ctrl.ControlSystemSimulation(PS_ctrl)
 
-PS_simulador.input['Positivas'] = 1
-PS_simulador.input['Negativas'] = 0
-PS_simulador.input['Intensificadores'] = 1
-PS_simulador.input['Negações'] = 0
+texto = "o filme foi muito bom"
+fp, fn, i, n = analisar_texto(texto)
+
+print(f"FP: {fp}, FN: {fn}, I: {i}, N: {n}")
+
+PS_simulador.input['Positivas'] = fp
+PS_simulador.input['Negativas'] = fn
+PS_simulador.input['Intensificadores'] = i
+PS_simulador.input['Negações'] = n
 
 PS_simulador.compute()
-print(PS_simulador.output['Polaridade do sentimento'])
+
+try:
+    valor = PS_simulador.output['Polaridade do sentimento']
+    if valor < 0.33:
+        print("Sentimento: Negativo")
+    elif valor < 0.66:
+        print("Sentimento: Neutro")
+    else:
+        print("Sentimento: Positivo")
+except KeyError:
+    print("Erro: Nenhuma regra foi disparada ou entradas inválidas.")
+
 # %%
