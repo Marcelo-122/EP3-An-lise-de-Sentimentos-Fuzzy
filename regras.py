@@ -46,9 +46,11 @@ def define_regras(FP, I, FN, N, PS):
         ctrl.Rule(FP['Média'] & FN['Baixa'] & I['Média'] & N['Média'], PS['Neutra']),
 
         # Negativo reforçado médio
-        ctrl.Rule(FP['Baixa'] & FN['Alta'] & I['Média'] & N['Baixa'], PS['Negativa'])
+        ctrl.Rule(FP['Baixa'] & FN['Alta'] & I['Média'] & N['Baixa'], PS['Negativa']),
 
-        
+        # Negativo reforçado médio
+        ctrl.Rule(FP['Baixa'] & FN['Baixa'] & I['Baixa'] & N['Alta'], PS['Neutra'])
+
     ]
 
     return rules

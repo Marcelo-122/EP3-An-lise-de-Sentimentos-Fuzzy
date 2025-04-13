@@ -14,7 +14,7 @@ negativas = [
     'detestei', 'horroroso', 'triste', 'deprimente', 'lamentável',
     'insuportável', 'fraco', 'desagradável', 'enjoado', 'problemático',
     'ridículo', 'estressante', 'decepcionante', 'pior', 'aborrecido',
-    'irritante', 'inútil', 'chato', 'medíocre', 'sofrível'
+    'irritante', 'inútil', 'chato', 'medíocre', 'sofrível', 'comum'
 ]
 
 # Intensificadores (I):
