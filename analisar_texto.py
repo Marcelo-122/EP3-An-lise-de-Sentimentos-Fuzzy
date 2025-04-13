@@ -1,7 +1,10 @@
 from sentimentos_config import positivas, negativas, intensificadores, negacoes
+import re
 
 def analisar_texto(texto):
-    palavras = texto.lower().split()
+    # Remove pontuações e transforma em minúsculas
+    texto_limpo = re.sub(r'[^\w\s]', '', texto.lower())
+    palavras = texto_limpo.split()
     
     relevantes = set(positivas + negativas + intensificadores + negacoes)
     palavras_relevantes = [p for p in palavras if p in relevantes]
